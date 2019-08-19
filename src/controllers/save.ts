@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import { flattenDeep, uniqBy } from 'lodash';
+import { flattenDeep, uniqBy, groupBy } from 'lodash';
+import crypto from 'crypto';
+
+import ShowView from '../views/ShowView';
 import store from '../store';
 
 import {
@@ -17,7 +20,8 @@ type Tweet = {
   link: string;
   likes: number;
   rts: number;
-  postedAt: string;
+  postedAt: Date;
+  linkHash: string;
 };
 
 const TweetKind = 'Tweet';
@@ -40,6 +44,16 @@ type TWTweet = {
   created_at: string;
 };
 
+export type Link = {
+  link: string;
+  likes: number;
+  rts: number;
+  postedAt: Date;
+  linkHash: string;
+  tweets: number | undefined;
+  rank: number;
+};
+
 export const fetchAndSave = (req: Request, res: Response) => {
   // https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline.html
   T.get('statuses/home_timeline', {
@@ -51,14 +65,20 @@ export const fetchAndSave = (req: Request, res: Response) => {
       const data = tResponse.data as Array<TWTweet>;
       const allExpandedUrls = flattenDeep(
         data.map(t =>
-          t.entities.urls.map(u => ({
-            link: u.expanded_url,
-            twitterId: t.id,
-            text: t.text,
-            likes: t.favorite_count,
-            rts: t.retweet_count,
-            postedAt: t.created_at,
-          })),
+          t.entities.urls.map(
+            (u): Tweet => ({
+              link: u.expanded_url,
+              twitterId: t.id,
+              text: t.text,
+              likes: t.favorite_count,
+              rts: t.retweet_count,
+              postedAt: new Date(t.created_at),
+              linkHash: crypto
+                .createHash('md5')
+                .update(u.expanded_url)
+                .digest('hex'),
+            }),
+          ),
         ),
       );
 
@@ -70,12 +90,15 @@ export const fetchAndSave = (req: Request, res: Response) => {
           !u.link.includes('tumblr.com'),
       );
 
+      console.log(filteredLinks);
+
       try {
         const entities = await store.save(
           filteredLinks.map(l => ({
             data: l,
             method: 'upsert',
             key: store.key([TweetKind, l.twitterId]),
+            excludeFromIndexes: ['text', 'likes', 'rts', 'link'],
           })),
         );
         res.send(entities);
@@ -91,9 +114,45 @@ export const fetchAndSave = (req: Request, res: Response) => {
 };
 export const show = async (req: Request, res: Response) => {
   try {
-    const q = await store.createQuery(TweetKind);
-    const entities = await store.runQuery(q);
-    res.send(entities);
+    const entities = await store
+      .createQuery(TweetKind)
+      .order('postedAt')
+      .run();
+    const results = entities[0] as Tweet[];
+
+    const grouped = groupBy(results, t => t.linkHash);
+    const sorted: Link[] = Object.keys(grouped)
+      .map(k => {
+        const tweets = grouped[k];
+        return tweets.reduce(
+          (l, t) => {
+            return {
+              link: t.link,
+              linkHash: t.linkHash,
+              rts: t.rts + (l.rts || 0),
+              likes: t.likes + (l.likes || 0),
+              tweets: (l.tweets || 0) + 1,
+              postedAt: t.postedAt,
+            };
+          },
+          {} as Link,
+        );
+      })
+      .sort((a, b) => {
+        if (a.tweets > b.tweets) return -1;
+        if (a.tweets < b.tweets) return 1;
+        if (a.rts > b.rts) return -1;
+        if (a.rts < b.rts) return 1;
+        if (a.likes > b.likes) return -1;
+        if (a.likes < b.likes) return 1;
+        return 0;
+      })
+      .map((l, i: number) => ({
+        ...l,
+        rank: i + 1,
+      }));
+
+    res.send(ShowView({ results: sorted }));
   } catch (err) {
     console.log(err);
     res.status(400).send(err);
