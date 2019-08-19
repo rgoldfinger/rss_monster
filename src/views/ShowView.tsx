@@ -3,8 +3,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import injectSheet, { JssProvider, SheetsRegistry, WithSheet } from 'react-jss';
 import { Link } from '../controllers/save';
 
-// const FontFamily = 'Noto+Sans+JP';
 const FontFamily = 'Lato:300';
+
+const maxWidth = `@media (max-width: 1024px)`;
 
 const styles = {
   page: {
@@ -20,16 +21,29 @@ const styles = {
     width: 36,
   },
   content: {
+    'white-space': 'nowrap',
+    overflow: 'hidden',
+    'text-overflow': 'ellipsis',
     flex: 1,
+  },
+  linkContainer: {
     display: 'flex',
-    'flex-direction': 'column',
+    'min-width': 20,
   },
   metadata: {
     paddingRight: 20,
   },
-  // myLabel: {
-  //   fontStyle: 'italic'
-  // }
+  [maxWidth]: {
+    page: {
+      padding: 10,
+    },
+    rank: {
+      width: 20,
+    },
+    item: {
+      paddingTop: 10,
+    },
+  },
 };
 interface Props extends WithSheet<typeof styles> {
   results: Link[];
@@ -43,15 +57,13 @@ function ShowView({ results, classes }: Props) {
         <div className={classes.item} key={l.linkHash}>
           <div className={classes.rank}>{l.rank}</div>
           <div className={classes.content}>
-            <div>
-              <a href={l.link} target="_blank">
-                {l.link}
-              </a>
-            </div>
+            <a href={l.link} target="_blank">
+              {l.link}
+            </a>
             <div>
               <span className={classes.metadata}>Tweets: {l.tweets}</span>
-              <span className={classes.metadata}>Likes: {l.likes}</span>
               <span className={classes.metadata}>Retweets: {l.rts}</span>
+              <span className={classes.metadata}>Likes: {l.likes}</span>
             </div>
           </div>
         </div>
@@ -74,6 +86,7 @@ export default function(data: { results: Props['results'] }) {
   <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=${FontFamily}&display=swap" rel="stylesheet">
     <title>rss monster</title>
     <style type="text/css" id="server-side-styles">
