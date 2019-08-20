@@ -12,7 +12,7 @@ steps:
         'compute',
         'instances',
         'update-container',
-        'rss-monster',
+        'app',
         '--container-image',
         'gcr.io/$PROJECT_ID/app:$SHORT_SHA',
         '--zone',
