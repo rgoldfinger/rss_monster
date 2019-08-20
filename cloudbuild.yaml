@@ -1,0 +1,11 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/app:$SHORT_SHA', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push
+    args: ['push', 'gcr.io/$PROJECT_ID/hello-cloudbuild:$SHORT_SHA']
+ - name: 'gcr.io/cloud-builders/gcloud'
+    args: ["compute", "instances", "update-container", "rss-monster", "--container-image", "gcr.io/$PROJECT_ID/hello-cloudbuild:$SHORT_SHA"]
+images:
+  - 'gcr.io/$PROJECT_ID/app:latest'
