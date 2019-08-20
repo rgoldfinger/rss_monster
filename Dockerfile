@@ -13,8 +13,6 @@ ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
 COPY src ./src
 RUN yarn build-ts
-RUN pwd
-RUN ls -al node_modules
 
 ARG NODE_ENV=production
 ENV NODE_ENV $NODE_ENV

@@ -14,7 +14,7 @@ steps:
         'update-container',
         'rss-monster',
         '--container-image',
-        'gcr.io/$PROJECT_ID/hello-cloudbuild:$SHORT_SHA',
+        'gcr.io/$PROJECT_ID/app:$SHORT_SHA',
       ]
 images:
   - 'gcr.io/$PROJECT_ID/app:$SHORT_SHA'
