@@ -5,7 +5,7 @@ import { Link } from '../controllers/save';
 
 const FontFamily = 'Lato:300';
 
-const maxWidth = `@media (max-width: 1024px)`;
+const maxWidth = `@media (max-width: 420px)`;
 
 const styles = {
   page: {
@@ -33,6 +33,7 @@ const styles = {
   metadata: {
     paddingRight: 20,
   },
+  link: {},
   [maxWidth]: {
     page: {
       padding: 10,
@@ -43,12 +44,14 @@ const styles = {
     item: {
       paddingTop: 10,
     },
+    link: {
+      fontSize: 12,
+    },
   },
 };
 interface Props extends WithSheet<typeof styles> {
   results: Link[];
 }
-// type Props = { results: Link[] };
 
 function ShowView({ results, classes }: Props) {
   return (
@@ -57,8 +60,8 @@ function ShowView({ results, classes }: Props) {
         <div className={classes.item} key={l.linkHash}>
           <div className={classes.rank}>{l.rank}</div>
           <div className={classes.content}>
-            <a href={l.link} target="_blank">
-              {l.link}
+            <a className={classes.link} href={l.link} target="_blank">
+              {l.link.replace('http://', '').replace('https://', '')}
             </a>
             <div>
               <span className={classes.metadata}>Tweets: {l.tweets}</span>
@@ -74,11 +77,11 @@ function ShowView({ results, classes }: Props) {
 
 const StyledShowView = injectSheet(styles)(ShowView);
 
-export default function(data: { results: Props['results'] }) {
+export default function(results: Props['results']) {
   const sheets = new SheetsRegistry();
   const app = renderToStaticMarkup(
     <JssProvider registry={sheets}>
-      <StyledShowView {...data} />
+      <StyledShowView results={results} />
     </JssProvider>,
   );
   // https://github.com/cssinjs/examples/blob/gh-pages/react-ssr/src/server.js

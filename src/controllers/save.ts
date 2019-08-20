@@ -152,7 +152,7 @@ export const show = async (req: Request, res: Response) => {
         rank: i + 1,
       }));
 
-    res.send(ShowView({ results: sorted }));
+    res.send(ShowView(sorted));
   } catch (err) {
     console.log(err);
     res.status(400).send(err);
