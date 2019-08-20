@@ -26,7 +26,6 @@ export const show = async (
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const queryStartDate = date.addDays(today, page);
   const queryEndDate = date.addDays(queryStartDate, 1);
-  console.log({ today, queryEndDate, queryStartDate });
   try {
     const query = store
       .createQuery(TweetKind)

@@ -2,7 +2,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import date from 'date-and-time';
 import injectSheet, { JssProvider, SheetsRegistry, WithSheet } from 'react-jss';
-import { Link } from '../controllers/save';
+import { Link } from '../controllers/show';
 
 const FontFamily = 'Lato:300';
 
@@ -33,7 +33,12 @@ const styles = {
     display: 'flex',
     'min-width': 20,
   },
-  link: {},
+  link: {
+    color: '#111',
+    '&:visited': {
+      color: '#AAA',
+    },
+  },
   metadata: {
     paddingRight: 20,
   },
@@ -46,8 +51,20 @@ const styles = {
   headerContainer: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'baseline',
     'justify-content': 'space-between',
+    padding: '0 10px',
+  },
+  navLink: {
+    textDecoration: 'none',
+    fontSize: 12,
+    color: '#333',
+    '&:visited': {
+      color: '#333',
+    },
+  },
+  placeholder: {
+    width: 80,
   },
   [maxWidth]: {
     page: {
@@ -75,18 +92,21 @@ function ShowView({ results, classes, pageDay, page }: Props) {
   return (
     <div className={classes.page}>
       <div className={classes.headerContainer}>
-        <a href={`/page/${page - 1}`}>
+        <a className={classes.navLink} href={`/page/${page - 1}`}>
           {date.format(date.addDays(pageDay, -1), 'MMMM D')}
         </a>
         <h4 className={classes.title}>
           {date.format(pageDay, 'MMMM D, YYYY')}
         </h4>
         {page !== 0 ? (
-          <a href={page === 1 ? '/' : `/page/${page + 1}`}>
+          <a
+            className={classes.navLink}
+            href={page === 1 ? '/' : `/page/${page + 1}`}
+          >
             {date.format(date.addDays(pageDay, 1), 'MMMM D')}
           </a>
         ) : (
-          <div />
+          <div className={classes.placeholder} />
         )}
       </div>
       {results.map(l => (
@@ -101,11 +121,6 @@ function ShowView({ results, classes, pageDay, page }: Props) {
               <span className={classes.metadata}>Retweets: {l.rts}</span>
               <span className={classes.metadata}>Likes: {l.likes}</span>
               <span className={classes.metadata}>Score: {l.score}</span>
-            </div>
-            <div className={classes.metadataContainer}>
-              <span className={classes.metadata}>
-                Posted at {l.postedAt.toDateString()}
-              </span>
             </div>
           </div>
         </div>
