@@ -13,14 +13,16 @@ import {
 
 import Twit from 'twit';
 
-type Tweet = {
+export type Tweet = {
   twitterId: number;
   text: string;
   link: string;
+  twDisplayLink?: string;
   likes: number;
   rts: number;
   postedAt: Date;
   linkHash: string;
+  linkTitle?: string;
 };
 
 export const TweetKind = 'Tweet';
@@ -36,7 +38,7 @@ const T = new Twit({
 
 type TWTweet = {
   text: string;
-  entities: { urls: Array<{ expanded_url: string }> };
+  entities: { urls: Array<{ expanded_url: string; display_url: string }> };
   retweet_count: number;
   favorite_count: number;
   id: number;
@@ -52,6 +54,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
   })
     .then(async tResponse => {
       const data = tResponse.data as Array<TWTweet>;
+      data.map(d => d.entities.urls.map(u => console.log(u)));
       const allExpandedUrls = flattenDeep(
         data.map(t =>
           t.entities.urls.map(
@@ -62,6 +65,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
               likes: t.favorite_count,
               rts: t.retweet_count,
               postedAt: new Date(t.created_at),
+              twDisplayLink: u.display_url,
               linkHash: crypto
                 .createHash('md5')
                 .update(u.expanded_url)
@@ -78,8 +82,6 @@ export const fetchAndSave = (req: Request, res: Response) => {
           !u.link.startsWith('https://twitter.com') &&
           !u.link.includes('tumblr.com'),
       );
-
-      console.log(filteredLinks);
 
       try {
         const entities = await store.save(

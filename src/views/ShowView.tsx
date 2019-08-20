@@ -75,12 +75,16 @@ function ShowView({ results, classes, pageDay, page }: Props) {
   return (
     <div className={classes.page}>
       <div className={classes.headerContainer}>
-        <a href={`/page/${page - 1}`}>back</a>
+        <a href={`/page/${page - 1}`}>
+          {date.format(date.addDays(pageDay, -1), 'MMMM D')}
+        </a>
         <h4 className={classes.title}>
           {date.format(pageDay, 'MMMM D, YYYY')}
         </h4>
         {page !== 0 ? (
-          <a href={page === 1 ? '/' : `/page/${page + 1}`}>forward</a>
+          <a href={page === 1 ? '/' : `/page/${page + 1}`}>
+            {date.format(date.addDays(pageDay, 1), 'MMMM D')}
+          </a>
         ) : (
           <div />
         )}

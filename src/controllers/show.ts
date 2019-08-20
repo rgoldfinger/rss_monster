@@ -4,17 +4,7 @@ import { groupBy } from 'lodash';
 import ShowView from '../views/ShowView';
 import store from '../store';
 import date from 'date-and-time';
-import { TweetKind } from './save';
-
-type Tweet = {
-  twitterId: number;
-  text: string;
-  link: string;
-  likes: number;
-  rts: number;
-  postedAt: Date;
-  linkHash: string;
-};
+import { TweetKind, Tweet } from './save';
 
 export type Link = {
   link: string;
