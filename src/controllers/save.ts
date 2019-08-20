@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import { flattenDeep, uniqBy, groupBy } from 'lodash';
+import { flattenDeep, uniqBy } from 'lodash';
 import crypto from 'crypto';
 
-import ShowView from '../views/ShowView';
 import store from '../store';
 
 import {
@@ -24,7 +23,7 @@ type Tweet = {
   linkHash: string;
 };
 
-const TweetKind = 'Tweet';
+export const TweetKind = 'Tweet';
 
 const T = new Twit({
   consumer_key: TWITTER_API_KEY,
@@ -42,16 +41,6 @@ type TWTweet = {
   favorite_count: number;
   id: number;
   created_at: string;
-};
-
-export type Link = {
-  link: string;
-  likes: number;
-  rts: number;
-  postedAt: Date;
-  linkHash: string;
-  tweets: number | undefined;
-  rank: number;
 };
 
 export const fetchAndSave = (req: Request, res: Response) => {
@@ -111,50 +100,4 @@ export const fetchAndSave = (req: Request, res: Response) => {
       console.log('tw error', err);
       res.status(400).send(err);
     });
-};
-export const show = async (req: Request, res: Response) => {
-  try {
-    const entities = await store
-      .createQuery(TweetKind)
-      .order('postedAt')
-      .run();
-    const results = entities[0] as Tweet[];
-
-    const grouped = groupBy(results, t => t.linkHash);
-    const sorted: Link[] = Object.keys(grouped)
-      .map(k => {
-        const tweets = grouped[k];
-        return tweets.reduce(
-          (l, t) => {
-            return {
-              link: t.link,
-              linkHash: t.linkHash,
-              rts: t.rts + (l.rts || 0),
-              likes: t.likes + (l.likes || 0),
-              tweets: (l.tweets || 0) + 1,
-              postedAt: t.postedAt,
-            };
-          },
-          {} as Link,
-        );
-      })
-      .sort((a, b) => {
-        if (a.tweets > b.tweets) return -1;
-        if (a.tweets < b.tweets) return 1;
-        if (a.rts > b.rts) return -1;
-        if (a.rts < b.rts) return 1;
-        if (a.likes > b.likes) return -1;
-        if (a.likes < b.likes) return 1;
-        return 0;
-      })
-      .map((l, i: number) => ({
-        ...l,
-        rank: i + 1,
-      }));
-
-    res.send(ShowView(sorted));
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(err);
-  }
 };

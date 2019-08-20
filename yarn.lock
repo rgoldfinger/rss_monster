@@ -461,6 +461,11 @@
   resolved "https://registry.yarnpkg.com/@types/cookiejar/-/cookiejar-2.1.1.tgz#90b68446364baf9efd8e8349bb36bd3852b75b80"
   integrity sha512-aRnpPa7ysx3aNW60hTiCtLHlQaIFsXFCgQlpakNgDNVFzbtusSY8PwjAQgRWfSk0ekNoBjO51eQRB6upA9uuyw==
 
+"@types/date-and-time@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@types/date-and-time/-/date-and-time-0.6.0.tgz#3e7fa319dd5e07affc96a9247d40aab31f62a6c5"
+  integrity sha512-gCNLSTK8SnHqNQo1MIy4fwhsufZU5zFXsJzmTdjvRsp6Xpb28G2ODFNSoZNSsf2kB9J0hPSzHCEaQqYusIwUqQ==
+
 "@types/dotenv@^6.1.1":
   version "6.1.1"
   resolved "https://registry.yarnpkg.com/@types/dotenv/-/dotenv-6.1.1.tgz#f7ce1cc4fe34f0a4373ba99fefa437b0bec54b46"
@@ -1681,6 +1686,11 @@ data-urls@^1.0.0:
     abab "^2.0.0"
     whatwg-mimetype "^2.2.0"
     whatwg-url "^7.0.0"
+
+date-and-time@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/date-and-time/-/date-and-time-0.9.0.tgz#1524579e56dc07675c640b41735a7665c0659240"
+  integrity sha512-4JybB6PbR+EebpFx/KyR5Ybl+TcdXMLIJkyYsCx3P4M4CWGMuDyFF19yh6TyasMAIF5lrsgIxiSHBXh2FFc7Fg==
 
 date-fns@^1.30.1:
   version "1.30.1"
