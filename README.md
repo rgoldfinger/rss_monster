@@ -25,3 +25,7 @@ docker push gcr.io/rss-monster/app:latest
 ```
 gcloud beta run deploy rss-monster --image gcr.io/rss-monster/app:latest --platform managed --region us-central1
 ```
+
+## logs
+
+https://cloud.google.com/compute/docs/containers/deploying-containers#viewing_docker_event_logs
