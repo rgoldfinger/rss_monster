@@ -43,7 +43,7 @@ const styles = {
     paddingRight: 20,
   },
   metadataContainer: {
-    marginTop: 6,
+    marginTop: 2,
   },
   title: {
     textAlign: 'center',
@@ -65,6 +65,10 @@ const styles = {
   },
   placeholder: {
     width: 80,
+  },
+  displayUrl: {
+    marginTop: 6,
+    fontSize: 10,
   },
   [maxWidth]: {
     page: {
@@ -109,13 +113,16 @@ function ShowView({ results, classes, pageDay, page }: Props) {
           <div className={classes.placeholder} />
         )}
       </div>
-      {results.map(l => (
+      {results.map((l, i) => (
         <div className={classes.item} key={l.linkHash}>
-          <div className={classes.rank}>{l.rank}</div>
+          <div className={classes.rank}>{i + 1}</div>
           <div className={classes.content}>
             <a className={classes.link} href={l.link} target="_blank">
-              {l.link.replace('http://', '').replace('https://', '')}
+              {l.pageTitle}
             </a>
+            <div className={classes.displayUrl}>
+              <span>{l.twDisplayLink}</span>
+            </div>
             <div className={classes.metadataContainer}>
               <span className={classes.metadata}>Tweets: {l.tweets}</span>
               <span className={classes.metadata}>Retweets: {l.rts}</span>
