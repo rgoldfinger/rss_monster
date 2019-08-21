@@ -35,41 +35,9 @@ export const show = async (
       .createQuery(LinkKind)
       .filter('postedAt', '>', queryStartDate)
       .filter('postedAt', '<', queryEndDate);
-    // .order('score');
 
     const entities = await store.runQuery(query);
     const results = entities[0] as Link[];
-
-    // const grouped = groupBy(results, t => t.linkHash);
-    // const sorted: Link[] = Object.keys(grouped)
-    //   .map(k => {
-    //     const tweets = grouped[k];
-    //     return tweets.reduce(
-    //       // @ts-ignore
-    //       (l, t) => {
-    //         return {
-    //           link: t.link,
-    //           linkHash: t.linkHash,
-    //           rts: t.rts + (l.rts || 0),
-    //           likes: t.likes + (l.likes || 0),
-    //           tweets: (l.tweets || 0) + 1,
-    //           postedAt: new Date(t.postedAt),
-    //           twDisplayLink: t.twDisplayLink,
-    //         };
-    //       },
-    //       {} as Link,
-    //     );
-    //   })
-    //   .map((l, i: number) => ({
-    //     ...l,
-    //     // Be sure to save the score when you're normalizing
-    //     score: (l.tweets - 1) * 500 + l.likes + l.rts,
-    //   }))
-    //   .sort((a, b) => {
-    //     if (a.score > b.score) return -1;
-    //     if (a.score < b.score) return 1;
-    //     return 0;
-    //   });
 
     const sorted = results.sort((a, b) => {
       if (a.score > b.score) return -1;

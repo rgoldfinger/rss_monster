@@ -64,20 +64,28 @@ export const saveLinkData = async (tweet: Tweet) => {
     console.log(e);
   }
 
-  if (existingLink.tweetIds.includes(tweet.twitterId)) {
-    return;
-  }
-
-  let pageTitle: undefined | string;
-  if (!existingLink.pageTitle) {
+  let pageTitle = existingLink.pageTitle;
+  if (!pageTitle) {
+    console.log('fetcing page title for ', tweet.twDisplayLink);
     pageTitle = await getPageTitle(tweet.link);
+    if (!pageTitle) {
+      console.log('But no page title found for ', tweet.link);
+    } else {
+      console.log('Page title found for ', tweet.link, pageTitle);
+    }
   }
 
-  const likes = existingLink.likes
-    ? existingLink.likes + tweet.likes
-    : tweet.likes;
-  const rts = existingLink.rts ? existingLink.rts + tweet.rts : tweet.rts;
-  const tweetIds = existingLink.tweetIds
+  const isSameTweet =
+    existingLink.tweetIds.length === 1 &&
+    existingLink.tweetIds.includes(tweet.twitterId);
+
+  const likes =
+    existingLink.likes && !isSameTweet
+      ? existingLink.likes + tweet.likes
+      : tweet.likes;
+  const rts =
+    existingLink.rts && !isSameTweet ? existingLink.rts + tweet.rts : tweet.rts;
+  const tweetIds = !isSameTweet
     ? [...existingLink.tweetIds, tweet.twitterId]
     : [tweet.twitterId];
   const tweets = tweetIds.length;
@@ -95,11 +103,19 @@ export const saveLinkData = async (tweet: Tweet) => {
     tweetIds,
   };
   try {
+    console.log('saving ', link.link, link.pageTitle);
     await store.save({
       data: link,
       method: 'upsert',
       key: linkKey,
-      excludeFromIndexes: ['tweets', 'likes', 'rts', 'link', 'twDisplayLink'],
+      excludeFromIndexes: [
+        'tweets',
+        'likes',
+        'rts',
+        'link',
+        'twDisplayLink',
+        'pageTitle',
+      ],
     });
   } catch (e) {
     console.log('Error saving ', linkKey);
