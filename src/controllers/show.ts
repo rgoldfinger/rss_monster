@@ -5,6 +5,7 @@ import ShowView from '../views/ShowView';
 import store from '../store';
 import date from 'date-and-time';
 import { TweetKind, Tweet } from './save';
+import { DateTime } from 'luxon';
 
 export type Link = {
   link: string;
@@ -22,8 +23,9 @@ export const show = async (
   res: Response,
 ) => {
   const page = req.params.id ? parseInt(req.params.id, 10) : 0;
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const nowPacifc = DateTime.fromObject({ zone: 'America/Los_Angeles' });
+
+  const today = new Date(nowPacifc.year, nowPacifc.month - 1, nowPacifc.day);
   const queryStartDate = date.addDays(today, page);
   const queryEndDate = date.addDays(queryStartDate, 1);
   try {

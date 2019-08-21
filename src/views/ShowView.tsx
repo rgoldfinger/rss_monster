@@ -101,7 +101,7 @@ function ShowView({ results, classes, pageDay, page }: Props) {
         {page !== 0 ? (
           <a
             className={classes.navLink}
-            href={page === 1 ? '/' : `/page/${page + 1}`}
+            href={page === -1 ? '/' : `/page/${page + 1}`}
           >
             {date.format(date.addDays(pageDay, 1), 'MMMM D')}
           </a>
