@@ -16,8 +16,6 @@ import {
 import Twit from 'twit';
 import { Link } from './show';
 
-fetch('http://cnb.cx/2TSnokz').then(b => console.log(b));
-
 export type Tweet = {
   twitterId: number;
   text: string;
@@ -61,7 +59,6 @@ export const saveLinkData = async (tweet: Tweet) => {
   try {
     const res = await store.get(linkKey);
     existingLink = res[0] || existingLink;
-    // console.log(existingLink);
   } catch (e) {
     console.log('Error fetching ', linkKey);
     console.log(e);
@@ -91,7 +88,7 @@ export const saveLinkData = async (tweet: Tweet) => {
     linkHash: tweet.linkHash,
     postedAt: new Date(tweet.postedAt),
     rts,
-    score: (tweets - 1) * 500 + parseInt(likes, 10) + parseInt(rts, 10),
+    score: (tweets - 1) * 500 + likes + rts,
     pageTitle,
     twDisplayLink: tweet.twDisplayLink,
     tweets,
@@ -104,12 +101,6 @@ export const saveLinkData = async (tweet: Tweet) => {
       key: linkKey,
       excludeFromIndexes: ['tweets', 'likes', 'rts', 'link', 'twDisplayLink'],
     });
-    // console.log(
-    //   'saved link (Dupe: ',
-    //   !!existingLink.link,
-    //   ')',
-    //   tweet.twDisplayLink,
-    // );
   } catch (e) {
     console.log('Error saving ', linkKey);
     console.log(e);

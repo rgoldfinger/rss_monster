@@ -7,9 +7,6 @@ export default async function fetchTitle(
   let page;
   try {
     const r: Response = await fetch(url);
-    console.log(r.url !== url);
-    console.log('url', url);
-    console.log('r.url', r.url);
     if (r.url !== url) {
       const r2 = await fetch(r.url);
       page = r2.text();
