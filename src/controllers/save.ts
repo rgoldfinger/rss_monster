@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { flattenDeep, uniqBy } from 'lodash';
 import crypto from 'crypto';
-import fetch from 'node-fetch';
 
 import store from '../store';
 import getPageTitle from '../util/pageTitle';
@@ -48,6 +47,11 @@ type TWTweet = {
   id: number;
   created_at: string;
 };
+
+function normalizeLink(link: string): string {
+  console.log(`normalizing link: ${link} split: ${link.split('?')} `);
+  return link.split('?')[0];
+}
 
 export const saveLinkData = async (tweet: Tweet) => {
   const linkKey = store.key([LinkKind, tweet.linkHash]);
@@ -136,7 +140,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
         data.map(t =>
           t.entities.urls.map(
             (u): Tweet => ({
-              link: u.expanded_url,
+              link: normalizeLink(u.expanded_url),
               twitterId: t.id,
               text: t.text,
               likes: t.favorite_count,
@@ -145,7 +149,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
               twDisplayLink: u.display_url,
               linkHash: crypto
                 .createHash('md5')
-                .update(u.expanded_url)
+                .update(normalizeLink(u.expanded_url))
                 .digest('hex'),
             }),
           ),

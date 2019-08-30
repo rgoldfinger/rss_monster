@@ -36,6 +36,7 @@ export const show = async (
       .filter('postedAt', '>', queryStartDate)
       .filter('postedAt', '<', queryEndDate);
 
+    console.log('fetching query');
     const entities = await store.runQuery(query);
     const results = entities[0] as Link[];
 
@@ -45,6 +46,7 @@ export const show = async (
       return 0;
     });
 
+    console.log('rendering results');
     res.send(ShowView(sorted, queryStartDate, page));
   } catch (err) {
     console.log(err);
