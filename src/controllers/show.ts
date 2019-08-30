@@ -24,32 +24,36 @@ export const show = async (
   req: Request & { params: { id: string } },
   res: Response,
 ) => {
-  const page = req.params.id ? parseInt(req.params.id, 10) : 0;
-  const nowPacifc = DateTime.fromObject({ zone: 'America/Los_Angeles' });
-
-  const today = new Date(nowPacifc.year, nowPacifc.month - 1, nowPacifc.day);
-  const queryStartDate = date.addDays(today, page);
-  const queryEndDate = date.addDays(queryStartDate, 1);
   try {
-    const query = store
-      .createQuery(LinkKind)
-      .filter('postedAt', '>', queryStartDate)
-      .filter('postedAt', '<', queryEndDate);
+    const page = req.params.id ? parseInt(req.params.id, 10) : 0;
+    const nowPacifc = DateTime.fromObject({ zone: 'America/Los_Angeles' });
 
-    console.log('fetching query');
-    const entities = await store.runQuery(query);
-    const results = entities[0] as Link[];
+    const today = new Date(nowPacifc.year, nowPacifc.month - 1, nowPacifc.day);
+    const queryStartDate = date.addDays(today, page);
+    const queryEndDate = date.addDays(queryStartDate, 1);
+    try {
+      const query = store
+        .createQuery(LinkKind)
+        .filter('postedAt', '>', queryStartDate)
+        .filter('postedAt', '<', queryEndDate);
 
-    const sorted = results.sort((a, b) => {
-      if (a.score > b.score) return -1;
-      if (a.score < b.score) return 1;
-      return 0;
-    });
+      console.log('fetching query');
+      const entities = await store.runQuery(query);
+      const results = entities[0] as Link[];
 
-    console.log('rendering results');
-    res.send(ShowView(sorted, queryStartDate, page));
-  } catch (err) {
-    console.log(err);
-    res.status(400).send(err);
+      const sorted = results.sort((a, b) => {
+        if (a.score > b.score) return -1;
+        if (a.score < b.score) return 1;
+        return 0;
+      });
+
+      console.log('rendering results');
+      res.send(ShowView(sorted, queryStartDate, page));
+    } catch (err) {
+      console.log(err);
+      res.status(400).send(err);
+    }
+  } catch (e) {
+    res.status(400).send(e);
   }
 };
