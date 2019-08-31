@@ -115,11 +115,14 @@ function ShowView({ results, classes, pageDay, page }: Props) {
           <div className={classes.rank}>{i + 1}</div>
           <div className={classes.content}>
             <a className={classes.link} href={l.link} target="_blank">
-              {l.pageTitle}
+              {l.pageTitle || l.link}
             </a>
-            <div className={classes.displayUrl}>
-              <span>{l.twDisplayLink}</span>
-            </div>
+            {l.pageTitle && (
+              <div className={classes.displayUrl}>
+                <span>{l.twDisplayLink}</span>
+              </div>
+            )}
+
             <div className={classes.metadataContainer}>
               <span className={classes.metadata}>Tweets: {l.tweets}</span>
               <span className={classes.metadata}>Retweets: {l.rts}</span>

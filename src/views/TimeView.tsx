@@ -116,14 +116,15 @@ function TimeView({ results, classes, pageDay, page }: Props) {
           <div className={classes.score}>{l.score.toLocaleString()}</div>
           <div className={classes.content}>
             <a className={classes.link} href={l.link} target="_blank">
-              {l.pageTitle}
+              {l.pageTitle || l.link}
             </a>
+
             <div className={classes.displayUrl}>
               <span>
                 {date.format(l.postedAt, 'hh:mm A')}
                 {'  '}
               </span>
-              <span>{l.twDisplayLink}</span>
+              {l.pageTitle && <span>{l.twDisplayLink}</span>}
             </div>
             <div className={classes.metadataContainer}>
               <span className={classes.metadata}>Tweets: {l.tweets}</span>
