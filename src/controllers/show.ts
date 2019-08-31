@@ -17,7 +17,7 @@ export type Link = {
   score: number;
   twDisplayLink?: string;
   pageTitle?: string;
-  tweetIds?: number[];
+  tweetIds?: string[];
 };
 
 export const show = async (

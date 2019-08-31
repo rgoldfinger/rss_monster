@@ -16,7 +16,7 @@ import Twit from 'twit';
 import { Link } from './show';
 
 export type Tweet = {
-  twitterId: number;
+  twitterId: string;
   text: string;
   link: string;
   twDisplayLink?: string;
@@ -79,9 +79,7 @@ export const saveLinkData = async (tweet: Tweet) => {
     }
   }
 
-  const isSameTweet =
-    existingLink.tweetIds.length === 1 &&
-    existingLink.tweetIds.includes(tweet.twitterId);
+  const isSameTweet = existingLink.tweetIds.includes(tweet.twitterId);
 
   const likes =
     existingLink.likes && !isSameTweet
@@ -141,7 +139,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
           t.entities.urls.map(
             (u): Tweet => ({
               link: normalizeLink(u.expanded_url),
-              twitterId: t.id,
+              twitterId: t.id.toString(),
               text: t.text,
               likes: t.favorite_count,
               rts: t.retweet_count,
