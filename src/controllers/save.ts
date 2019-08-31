@@ -48,14 +48,6 @@ type TWTweet = {
   created_at: string;
 };
 
-function normalizeLink(link: string): string {
-  const split = link.split('?');
-  if (split.length > 1) {
-    console.log(`normalizing link: ${link} split: ${split} `);
-  }
-  return split[0];
-}
-
 export const saveLinkData = async (tweet: Tweet) => {
   const linkKey = store.key([LinkKind, tweet.linkHash]);
   let existingLink: Partial<Link> = {
@@ -140,7 +132,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
         data.map(t =>
           t.entities.urls.map(
             (u): Tweet => ({
-              link: normalizeLink(u.expanded_url),
+              link: u.expanded_url,
               twitterId: t.id.toString(),
               text: t.text,
               likes: t.favorite_count,
@@ -149,7 +141,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
               twDisplayLink: u.display_url,
               linkHash: crypto
                 .createHash('md5')
-                .update(normalizeLink(u.expanded_url))
+                .update(u.expanded_url)
                 .digest('hex'),
             }),
           ),

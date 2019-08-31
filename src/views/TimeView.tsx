@@ -18,8 +18,8 @@ const styles = {
     display: 'flex',
     'align-items': 'center',
   },
-  rank: {
-    width: 30,
+  score: {
+    width: 50,
     marginRight: 20,
     textAlign: 'end',
   },
@@ -44,6 +44,7 @@ const styles = {
   },
   metadataContainer: {
     marginTop: 2,
+    fontSize: 10,
   },
   title: {
     textAlign: 'center',
@@ -68,13 +69,13 @@ const styles = {
   },
   displayUrl: {
     marginTop: 6,
-    fontSize: 10,
+    fontSize: 12,
   },
   [maxWidth]: {
     page: {
       padding: '10px 0',
     },
-    rank: {
+    score: {
       marginRight: 10,
     },
     item: {
@@ -92,18 +93,18 @@ interface Props extends WithSheet<typeof styles> {
   page: number;
 }
 
-function ShowView({ results, classes, pageDay, page }: Props) {
+function TimeView({ results, classes, pageDay, page }: Props) {
   return (
     <div className={classes.page}>
       <div className={classes.headerContainer}>
-        <a className={classes.navLink} href={`/page/${page - 1}`}>
+        <a className={classes.navLink} href={`/time/${page - 1}`}>
           {date.format(date.addDays(pageDay, -1), 'MMMM D')}
         </a>
         <h4 className={classes.title}>
           {date.format(pageDay, 'MMMM D, YYYY')}
         </h4>
         {page !== 0 ? (
-          <a className={classes.navLink} href={`/page/${page + 1}`}>
+          <a className={classes.navLink} href={`/time/${page + 1}`}>
             {date.format(date.addDays(pageDay, 1), 'MMMM D')}
           </a>
         ) : (
@@ -112,19 +113,22 @@ function ShowView({ results, classes, pageDay, page }: Props) {
       </div>
       {results.map((l, i) => (
         <div className={classes.item} key={l.linkHash}>
-          <div className={classes.rank}>{i + 1}</div>
+          <div className={classes.score}>{l.score.toLocaleString()}</div>
           <div className={classes.content}>
             <a className={classes.link} href={l.link} target="_blank">
               {l.pageTitle}
             </a>
             <div className={classes.displayUrl}>
+              <span>
+                {date.format(l.postedAt, 'hh:mm A')}
+                {'  '}
+              </span>
               <span>{l.twDisplayLink}</span>
             </div>
             <div className={classes.metadataContainer}>
               <span className={classes.metadata}>Tweets: {l.tweets}</span>
               <span className={classes.metadata}>Retweets: {l.rts}</span>
               <span className={classes.metadata}>Likes: {l.likes}</span>
-              <span className={classes.metadata}>Score: {l.score}</span>
             </div>
           </div>
         </div>
@@ -133,7 +137,7 @@ function ShowView({ results, classes, pageDay, page }: Props) {
   );
 }
 
-const StyledShowView = injectSheet(styles)(ShowView);
+const StyledTimeView = injectSheet(styles)(TimeView);
 
 export default function(
   results: Props['results'],
@@ -143,7 +147,7 @@ export default function(
   const sheets = new SheetsRegistry();
   const app = renderToStaticMarkup(
     <JssProvider registry={sheets}>
-      <StyledShowView results={results} pageDay={pageDay} page={page} />
+      <StyledTimeView results={results} pageDay={pageDay} page={page} />
     </JssProvider>,
   );
   // https://github.com/cssinjs/examples/blob/gh-pages/react-ssr/src/server.js
