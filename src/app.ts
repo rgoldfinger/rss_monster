@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 
 import * as saveController from './controllers/save';
 import * as showController from './controllers/show';
+import resave from './controllers/resave';
 
 // Create Express server
 const app = express();
@@ -21,5 +22,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/fetchAndSave', saveController.fetchAndSave);
 app.get('/', showController.show);
 app.get('/page/:id', showController.show);
+app.get('/resave', resave);
 
 export default app;

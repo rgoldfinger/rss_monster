@@ -35,3 +35,7 @@ https://cloud.google.com/compute/docs/containers/deploying-containers#viewing_do
 Docker engine logs:
 
 https://console.cloud.google.com/logs/viewer?project=rss-monster&minLogLevel=0&expandAll=false&timestamp=2019-08-20T03:45:28.041000000Z&customFacets=&limitCustomFacetWidth=true&advancedFilter=resource.type%3D%22gce_instance%22%0AlogName%3D%22projects%2Frss-monster%2Flogs%2Fcos_system%22%0AjsonPayload._HOSTNAME%3D%22app%22%0AjsonPayload.SYSLOG_IDENTIFIER%3D%22docker%22&dateRangeStart=2019-08-20T02:46:07.147Z&dateRangeEnd=2019-08-20T03:46:07.147Z&interval=PT1H&scrollTimestamp=2019-08-20T03:35:39.619194000Z
+
+## Cloud Datastore
+
+https://googleapis.dev/nodejs/datastore/latest/index.html

@@ -49,8 +49,11 @@ type TWTweet = {
 };
 
 function normalizeLink(link: string): string {
-  console.log(`normalizing link: ${link} split: ${link.split('?')} `);
-  return link.split('?')[0];
+  const split = link.split('?');
+  if (split.length > 1) {
+    console.log(`normalizing link: ${link} split: ${split} `);
+  }
+  return split[0];
 }
 
 export const saveLinkData = async (tweet: Tweet) => {
@@ -70,7 +73,7 @@ export const saveLinkData = async (tweet: Tweet) => {
 
   let pageTitle = existingLink.pageTitle;
   if (!pageTitle) {
-    console.log('fetcing page title for ', tweet.twDisplayLink);
+    console.log('fetching page title for ', tweet.twDisplayLink);
     pageTitle = await getPageTitle(tweet.link);
     if (!pageTitle) {
       console.log('But no page title found for ', tweet.link);
@@ -78,15 +81,15 @@ export const saveLinkData = async (tweet: Tweet) => {
       console.log('Page title found for ', tweet.link, pageTitle);
     }
   }
-
   const isSameTweet = existingLink.tweetIds.includes(tweet.twitterId);
+  const isOnlyTweet = isSameTweet && existingLink.tweetIds.length === 1;
 
   const likes =
-    existingLink.likes && !isSameTweet
+    existingLink.likes && !isOnlyTweet
       ? existingLink.likes + tweet.likes
       : tweet.likes;
   const rts =
-    existingLink.rts && !isSameTweet ? existingLink.rts + tweet.rts : tweet.rts;
+    existingLink.rts && !isOnlyTweet ? existingLink.rts + tweet.rts : tweet.rts;
   const tweetIds = !isSameTweet
     ? [...existingLink.tweetIds, tweet.twitterId]
     : [tweet.twitterId];
@@ -111,7 +114,6 @@ export const saveLinkData = async (tweet: Tweet) => {
       method: 'upsert',
       key: linkKey,
       excludeFromIndexes: [
-        'tweets',
         'likes',
         'rts',
         'link',
