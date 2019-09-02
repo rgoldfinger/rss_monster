@@ -48,7 +48,7 @@ export const show = async (
       });
 
       console.log('rendering results');
-      res.send(ShowView(sorted, queryStartDate, page));
+      res.send(ShowView({ results: sorted, pageDay: queryStartDate, page }));
     } catch (err) {
       console.log(err);
       res.status(400).send(err);

@@ -2,7 +2,8 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import date from 'date-and-time';
 import injectSheet, { JssProvider, SheetsRegistry, WithSheet } from 'react-jss';
-import { Link } from '../controllers/show';
+import { Link } from '../controllers/rank';
+import withLayout from './renderLayout';
 
 const FontFamily = 'Lato:300';
 
@@ -139,32 +140,4 @@ function TimeView({ results, classes, pageDay, page }: Props) {
 }
 
 const StyledTimeView = injectSheet(styles)(TimeView);
-
-export default function(
-  results: Props['results'],
-  pageDay: Date,
-  page: number,
-) {
-  const sheets = new SheetsRegistry();
-  const app = renderToStaticMarkup(
-    <JssProvider registry={sheets}>
-      <StyledTimeView results={results} pageDay={pageDay} page={page} />
-    </JssProvider>,
-  );
-  // https://github.com/cssinjs/examples/blob/gh-pages/react-ssr/src/server.js
-  return `<!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css?family=${FontFamily}&display=swap" rel="stylesheet">
-    <title>rss monster</title>
-    <style type="text/css" id="server-side-styles">
-      ${sheets.toString()}
-    </style>
-  </head>
-  <body>
-    <div id="app">${app}</div>
-  </body>
-</html>`;
-}
+export default withLayout(StyledTimeView);

@@ -13,7 +13,7 @@ import {
 } from '../util/secrets';
 
 import Twit from 'twit';
-import { Link } from './show';
+import { Link } from './rank';
 
 export type Tweet = {
   twitterId: string;

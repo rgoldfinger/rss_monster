@@ -47,7 +47,7 @@ export const show = async (
       });
 
       console.log('rendering results');
-      res.send(TimeView(sorted, queryStartDate, page));
+      res.send(TimeView({ results: sorted, pageDay: queryStartDate, page }));
     } catch (err) {
       console.log(err);
       res.status(400).send(err);
