@@ -7,7 +7,10 @@ const maxWidth = `@media (max-width: 420px)`;
 const buttonDefault = {
   padding: 12,
   backgroundColor: '#FFF',
-  borderColor: '#000',
+  // borderColor: '#000',
+  border: '1px solid #000',
+  textDecoration: 'none',
+  color: '#000',
 };
 
 const styles = {
@@ -37,7 +40,9 @@ function LandingView({ classes: c }: Props) {
         Get your news from Twitter, without being on Twitter
       </span>
       <div className={c.ctaContainer}>
-        <button className={c.buttonDefault}>Sign up</button>
+        <a href="/login/twitter" className={c.buttonDefault}>
+          Sign up
+        </a>
       </div>
     </div>
   );
