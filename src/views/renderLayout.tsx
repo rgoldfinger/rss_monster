@@ -6,7 +6,6 @@ export const FontFamily = 'Lato:300';
 
 export default function(Component: any) {
   return function(props: any) {
-    console.log(props);
     const sheets = new SheetsRegistry();
     const app = renderToStaticMarkup(
       <JssProvider registry={sheets}>

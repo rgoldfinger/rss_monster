@@ -11,5 +11,5 @@ export const show = async (
   res: Response,
 ) => {
   // TODO if logged in, redirect to /u/:username
-  res.send(LandingView());
+  res.send(LandingView({}));
 };
