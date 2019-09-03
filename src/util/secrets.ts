@@ -32,3 +32,4 @@ export const TWITTER_ACCESS_TOKEN_SECRET = getOrThrow(
 
 export const ENCRYPTION_KEY = getOrThrow('ENCRYPTION_KEY'); // Must be 256 bits (32 characters)
 export const COOKIE_SECRET = getOrThrow('COOKIE_SECRET');
+export const OAUTH_REDIRECT_DOMAIN = getOrThrow('OAUTH_REDIRECT_DOMAIN');

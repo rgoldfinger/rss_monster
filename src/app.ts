@@ -65,14 +65,12 @@ app.get('/landing', landingController.show);
 app.get('/u/:username/:id?', userTimeController.show);
 
 // maintenance
-// app.get('/addAccountIds', saveController.fetchLinks);
-
 // app.get('/delete', resaveController.deleteLinks);
 // app.get('/resave', resaveController.resaveLinks);
 // app.get('/resaveTweets', resaveController.resaveTweets);
-// app.get('/fetchAndSave', saveController.fetchAndSave);
 
 // old
+// app.get('/fetchAndSave', saveController.fetchAndSave);
 // app.get('/page/:id', rankController.show);
 // app.get('/time/:id?', timeController.show);
 

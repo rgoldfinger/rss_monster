@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 import oauth from 'oauth';
 
-import LandingView from '../views/LandingView';
-import { TWITTER_API_KEY, TWITTER_API_SECRET_KEY } from '../util/secrets';
+import {
+  TWITTER_API_KEY,
+  TWITTER_API_SECRET_KEY,
+  OAUTH_REDIRECT_DOMAIN,
+} from '../util/secrets';
 import store, { UserKind, User, AccountID } from '../store';
 import { encrypt } from '../util/encryption';
 import { fetchTimelineAndSave } from './save';
@@ -14,7 +17,7 @@ const consumer = new oauth.OAuth(
   TWITTER_API_KEY,
   TWITTER_API_SECRET_KEY,
   '1.0A',
-  'http://localhost:3000/oauth/twitter/callback',
+  `${OAUTH_REDIRECT_DOMAIN}/oauth/twitter/callback`,
   'HMAC-SHA1',
 );
 
