@@ -50,6 +50,7 @@ app.get('/login/twitter', oauthController.twLogin);
 app.get('/oauth/twitter/callback', oauthController.twCallback);
 
 app.get('/logout', function(req, res) {
+  // @ts-ignore
   req.session.reset(function(e: any) {
     res.redirect('/');
   });
