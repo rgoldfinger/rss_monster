@@ -18,7 +18,11 @@ import { decrypt } from './util/encryption';
 declare global {
   namespace Express {
     interface Request {
-      session?: any;
+      session: {
+        user?: User;
+        oauthRequestToken?: string;
+        oauthRequestTokenSecret?: string;
+      };
     }
   }
 }
@@ -54,15 +58,18 @@ app.get('/logout', function(req, res) {
 /**
  * Primary app routes.
  */
-app.get('/fetchAndSave', saveController.fetchAndSave);
 app.get('/fetchUsersAndSave', saveController.fetchUsersAndSave);
-app.get('/', timeController.show);
-app.get('/page/:id', rankController.show);
-app.get('/resave', resaveController.resaveLinks);
-app.get('/delete', resaveController.deleteLinks);
-app.get('/time/:id?', timeController.show);
+app.get('/', landingController.show);
 app.get('/landing', landingController.show);
 app.get('/u/:username/:id?', userTimeController.show);
+
+// old or maintenance
+// app.get('/delete', resaveController.deleteLinks);
+// app.get('/resave', resaveController.resaveLinks);
+// app.get('/fetchAndSave', saveController.fetchAndSave);
+app.get('/page/:id', rankController.show);
+app.get('/time/:id?', timeController.show);
+
 app.get('*', function(req, res) {
   res.redirect('/');
 });

@@ -8,12 +8,11 @@ import { DateTime } from 'luxon';
 export const show = async (
   req: Request & {
     params: { username: string; id?: string };
-    session: { user: User };
   },
   res: Response,
 ) => {
-  const actingUser: User = req.session.user;
-  if (actingUser.username === req.params.username) {
+  const actingUser = req.session.user;
+  if (actingUser && actingUser.username === req.params.username) {
     try {
       const page = req.params.id ? parseInt(req.params.id, 10) : 0;
       const nowPacifc = DateTime.fromObject({ zone: 'America/Los_Angeles' });
