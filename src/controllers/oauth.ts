@@ -18,26 +18,6 @@ const consumer = new oauth.OAuth(
   'HMAC-SHA1',
 );
 
-export const show = async (
-  req: Request & { params: { id: string } },
-  res: Response,
-) => {
-  // @ts-ignore
-  console.log(req.session);
-  // [Node] { 'oauth:twitter':
-  // [Node]    { oauth_token: 'yOBkjgAAAAAA_LpKAAABbPJ6Xf0',
-  // [Node]      oauth_token_secret: 'kTqOLdFevCm9MPaKidiIQlUhkygjVwoX' } }
-  // @ts-ignore
-  console.log(req.twSession);
-  // [Node] { 'oauth:twitter':
-  // [Node]    { oauth_token: 'yOBkjgAAAAAA_LpKAAABbPJ6Xf0',
-  // [Node]      oauth_token_secret: 'kTqOLdFevCm9MPaKidiIQlUhkygjVwoX' } }
-
-  console.log(req.user);
-  // TODO if logged in, redirect to /u/:username
-  res.send(LandingView({}));
-};
-
 // app.get('/u/:username', function(req, res) {
 //   consumer.get(
 //     'https://api.twitter.com/1.1/account/verify_credentials.json',
@@ -95,7 +75,7 @@ export function twCallback(req: Request, res: Response) {
           'Error getting OAuth access token : ' + error + '[' + results + ']',
         );
       } else {
-        const twId: AccountID = results.user_id;
+        const twId: AccountID = results.user_id.toString();
         const username = results.screen_name;
         const userKey = store.key([UserKind, username]);
         const user: User = {

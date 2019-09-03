@@ -12,6 +12,7 @@ export const show = async (
   res: Response,
 ) => {
   const actingUser = req.session.user;
+  // TODO verify that this user exists in the DB
   if (actingUser && actingUser.username === req.params.username) {
     try {
       const page = req.params.id ? parseInt(req.params.id, 10) : 0;
