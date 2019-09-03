@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
-import { groupBy } from 'lodash';
+import date from 'date-and-time';
+import { DateTime } from 'luxon';
 
 import ShowView from '../views/ShowView';
-import store from '../store';
-import date from 'date-and-time';
-import { TweetKind, Tweet, LinkKind, saveLinkData } from './save';
-import { DateTime } from 'luxon';
+import store, { LinkKind } from '../store';
 
 export type Link = {
   link: string;

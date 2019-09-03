@@ -3,6 +3,8 @@ import oauth from 'oauth';
 
 import LandingView from '../views/LandingView';
 import { TWITTER_API_KEY, TWITTER_API_SECRET_KEY } from '../util/secrets';
+import store, { UserKind, User } from '../store';
+import { encrypt, decrypt } from '../util/encryption';
 
 // https://gist.github.com/JuanJo4/e408d9349b403523aeb00f262900e768
 const consumer = new oauth.OAuth(
@@ -86,18 +88,42 @@ export function twCallback(req: Request, res: Response) {
     req.session.oauthRequestToken,
     req.session.oauthRequestTokenSecret,
     req.query.oauth_verifier,
-    function(error, oauthAccessToken, oauthAccessTokenSecret, results) {
+    async function(error, oauthAccessToken, oauthAccessTokenSecret, results) {
       if (error) {
         res.send(
           'Error getting OAuth access token : ' + error + '[' + results + ']',
         );
       } else {
-        req.session.oauthAccessToken = oauthAccessToken;
-        req.session.oauthAccessTokenSecret = oauthAccessTokenSecret;
-        req.session.userId = results.user_id;
-        req.session.username = results.screen_name;
-        console.log(results);
-        res.redirect(`/u/${results.screen_name}`);
+        const twId = results.user_id;
+        const username = results.screen_name;
+        const userKey = store.key([UserKind, username]);
+        const data: User = {
+          username,
+          twId,
+          encryptedOAuthToken: encrypt(oauthAccessToken),
+          encryptedOAuthTokenSecret: encrypt(oauthAccessTokenSecret),
+        };
+        try {
+          await store.save({
+            data,
+            method: 'upsert',
+            key: userKey,
+            excludeFromIndexes: [
+              'encryptedOAuthToken',
+              'encryptedOAuthTokenSecret',
+            ],
+          });
+
+          req.session.oauthAccessToken = oauthAccessToken;
+          req.session.oauthAccessTokenSecret = oauthAccessTokenSecret;
+          req.session.twId = twId;
+          req.session.username = username;
+          res.redirect(`/u/${username}`);
+        } catch (e) {
+          console.log(e);
+          // TODO display error to user
+          res.redirect('/');
+        }
       }
     },
   );

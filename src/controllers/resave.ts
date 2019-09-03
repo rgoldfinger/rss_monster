@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 
-import store from '../store';
-import { saveLinkData, Tweet, TweetKind, LinkKind } from './save';
-import { Link } from './time';
+import store, { TweetKind, LinkKind, Tweet, Link } from '../store';
+import { saveLinkData } from './save';
 
 export async function resaveLinks(req: Request, res: Response) {
   const query = store.createQuery(TweetKind);

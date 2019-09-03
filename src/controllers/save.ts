@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { flattenDeep, uniqBy } from 'lodash';
 import crypto from 'crypto';
 
-import store from '../store';
+import store, { TweetKind, LinkKind, Tweet } from '../store';
 import getPageTitle from '../util/pageTitle';
 
 import {
@@ -14,21 +14,6 @@ import {
 
 import Twit from 'twit';
 import { Link } from './rank';
-
-export type Tweet = {
-  twitterId: string;
-  text: string;
-  link: string;
-  twDisplayLink?: string;
-  likes: number;
-  rts: number;
-  postedAt: Date;
-  linkHash: string;
-  linkTitle?: string;
-};
-
-export const TweetKind = 'Tweet';
-export const LinkKind = 'Link';
 
 const T = new Twit({
   consumer_key: TWITTER_API_KEY,

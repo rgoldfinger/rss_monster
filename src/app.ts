@@ -10,6 +10,9 @@ import * as timeController from './controllers/time';
 import * as resaveController from './controllers/resave';
 import * as landingController from './controllers/landing';
 import * as oauthController from './controllers/oauth';
+import { COOKIE_SECRET } from './util/secrets';
+import store, { UserKind, User } from './store';
+import { decrypt } from './util/encryption';
 
 declare global {
   namespace Express {
@@ -25,7 +28,7 @@ app.use(
   // For whatever reason passport-twitter creates a session with our oauth credentials
   clientSessions({
     cookieName: 'session',
-    secret: 'keyboard cat',
+    secret: COOKIE_SECRET,
     duration: 90 * 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
   }),
 );
@@ -42,9 +45,9 @@ app.get('/login/twitter', oauthController.twLogin);
 app.get('/oauth/twitter/callback', oauthController.twCallback);
 
 app.get('/logout', function(req, res) {
-  //   req.session.destroy(function(err) {
-  //     res.redirect('/');
-  //   });
+  req.session.reset(function(e: any) {
+    res.redirect('/');
+  });
 });
 
 /**
@@ -57,7 +60,13 @@ app.get('/resave', resaveController.resaveLinks);
 app.get('/delete', resaveController.deleteLinks);
 app.get('/time/:id?', timeController.show);
 app.get('/landing', landingController.show);
-app.get('/u/:username', landingController.show);
+app.get('/u/:username', async function(req, res) {
+  const userKey = store.key([UserKind, req.session.username]);
+  const result = await store.get(userKey);
+  const user = result[0] as User;
+  // TODO if logged in, redirect to /u/:username
+  res.send(user);
+});
 app.get('*', function(req, res) {
   res.redirect('/');
 });

@@ -29,3 +29,6 @@ export const TWITTER_ACCESS_TOKEN = getOrThrow('TWITTER_ACCESS_TOKEN');
 export const TWITTER_ACCESS_TOKEN_SECRET = getOrThrow(
   'TWITTER_ACCESS_TOKEN_SECRET',
 );
+
+export const ENCRYPTION_KEY = getOrThrow('ENCRYPTION_KEY'); // Must be 256 bits (32 characters)
+export const COOKIE_SECRET = getOrThrow('COOKIE_SECRET');

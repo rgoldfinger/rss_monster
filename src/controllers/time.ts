@@ -1,23 +1,9 @@
 import { Request, Response } from 'express';
 
 import TimeView from '../views/TimeView';
-import store from '../store';
+import store, { LinkKind, Link } from '../store';
 import date from 'date-and-time';
-import { LinkKind } from './save';
 import { DateTime } from 'luxon';
-
-export type Link = {
-  link: string;
-  likes: number;
-  rts: number;
-  postedAt: Date;
-  linkHash: string;
-  tweets: number | undefined;
-  score: number;
-  twDisplayLink?: string;
-  pageTitle?: string;
-  tweetIds?: string[];
-};
 
 export const show = async (
   req: Request & { params: { id: string } },
