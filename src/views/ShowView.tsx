@@ -1,7 +1,7 @@
 import React from 'react';
 import date from 'date-and-time';
 import injectSheet, { WithSheet } from 'react-jss';
-import { Link } from '../controllers/rank';
+import { Link } from '../store';
 import withLayout from './renderLayout';
 
 const maxWidth = `@media (max-width: 420px)`;

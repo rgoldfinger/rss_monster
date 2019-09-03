@@ -2,7 +2,14 @@ import { Request, Response } from 'express';
 import { flattenDeep, uniqBy } from 'lodash';
 import crypto from 'crypto';
 
-import store, { TweetKind, LinkKind, Tweet } from '../store';
+import store, {
+  TweetKind,
+  LinkKind,
+  Tweet,
+  UserKind,
+  User,
+  Link,
+} from '../store';
 import getPageTitle from '../util/pageTitle';
 
 import {
@@ -13,16 +20,8 @@ import {
 } from '../util/secrets';
 
 import Twit from 'twit';
-import { Link } from './rank';
-
-const T = new Twit({
-  consumer_key: TWITTER_API_KEY,
-  consumer_secret: TWITTER_API_SECRET_KEY,
-  access_token: TWITTER_ACCESS_TOKEN,
-  access_token_secret: TWITTER_ACCESS_TOKEN_SECRET,
-  timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
-  strictSSL: true, // optional - requires SSL certificates to be valid.
-});
+import { decrypt } from '../util/encryption';
+import { userInfo } from 'os';
 
 type TWTweet = {
   text: string;
@@ -39,6 +38,7 @@ export const saveLinkData = async (tweet: Tweet) => {
     rts: 0,
     likes: 0,
     tweetIds: [],
+    accountId: tweet.accountId,
   };
   try {
     const res = await store.get(linkKey);
@@ -73,6 +73,7 @@ export const saveLinkData = async (tweet: Tweet) => {
   const tweets = tweetIds.length;
 
   const link: Link = {
+    accountId: tweet.accountId,
     likes,
     link: tweet.link,
     linkHash: tweet.linkHash,
@@ -84,8 +85,9 @@ export const saveLinkData = async (tweet: Tweet) => {
     tweets,
     tweetIds,
   };
+
   try {
-    console.log('saving ', link.link, link.pageTitle);
+    console.log('saving ', link.link, link.pageTitle, link.accountId);
     await store.save({
       data: link,
       method: 'upsert',
@@ -105,6 +107,14 @@ export const saveLinkData = async (tweet: Tweet) => {
 };
 
 export const fetchAndSave = (req: Request, res: Response) => {
+  const T = new Twit({
+    consumer_key: TWITTER_API_KEY,
+    consumer_secret: TWITTER_API_SECRET_KEY,
+    access_token: TWITTER_ACCESS_TOKEN,
+    access_token_secret: TWITTER_ACCESS_TOKEN_SECRET,
+    timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
+    strictSSL: true, // optional - requires SSL certificates to be valid.
+  });
   // https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline.html
   T.get('statuses/home_timeline', {
     trim_user: true,
@@ -117,6 +127,7 @@ export const fetchAndSave = (req: Request, res: Response) => {
         data.map(t =>
           t.entities.urls.map(
             (u): Tweet => ({
+              accountId: 'fake',
               link: u.expanded_url,
               twitterId: t.id.toString(),
               text: t.text,
@@ -167,4 +178,82 @@ export const fetchAndSave = (req: Request, res: Response) => {
       console.log('tw error', err);
       res.status(400).send(err);
     });
+};
+
+export async function fetchTimelineAndSave(user: User) {
+  console.log(`fetching timeline for: ${user.username}`);
+  const T = new Twit({
+    consumer_key: TWITTER_API_KEY,
+    consumer_secret: TWITTER_API_SECRET_KEY,
+    access_token: decrypt(user.encryptedOAuthToken),
+    access_token_secret: decrypt(user.encryptedOAuthTokenSecret),
+    timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
+    strictSSL: true, // optional - requires SSL certificates to be valid.
+  });
+  // https://developer.twitter.com/en/docs/tweets/timelines/api-reference/get-statuses-home_timeline.html
+
+  T.get('statuses/home_timeline', {
+    trim_user: true,
+    exclude_replies: true,
+    count: 200,
+  }).then(async tResponse => {
+    const data = tResponse.data as Array<TWTweet>;
+    const allExpandedUrls = flattenDeep(
+      data.map(t =>
+        t.entities.urls.map(
+          (u): Tweet => ({
+            accountId: user.twId,
+            link: u.expanded_url,
+            twitterId: t.id.toString(),
+            text: t.text,
+            likes: t.favorite_count,
+            rts: t.retweet_count,
+            postedAt: new Date(t.created_at),
+            twDisplayLink: u.display_url,
+            linkHash: crypto
+              .createHash('md5')
+              .update(u.expanded_url)
+              .digest('hex'),
+          }),
+        ),
+      ),
+    );
+
+    const uniqUrls = uniqBy(allExpandedUrls, u => u.twitterId);
+
+    const filteredTweets = uniqUrls.filter(
+      u =>
+        !u.link.startsWith('https://twitter.com') &&
+        !u.link.includes('tumblr.com'),
+    );
+
+    try {
+      await store.save(
+        filteredTweets.map(l => ({
+          data: l,
+          method: 'upsert',
+          key: store.key([TweetKind, l.twitterId]),
+          excludeFromIndexes: ['text', 'likes', 'rts', 'link', 'twDisplayLink'],
+        })),
+      );
+    } catch (err) {
+      console.log(err);
+      throw new Error(err);
+    }
+    Promise.all(filteredTweets.map(saveLinkData));
+  });
+}
+
+export const fetchUsersAndSave = async (req: Request, res: Response) => {
+  // TODO logic to ensure that we're fetching all of the users. Or just move it to some sort of queue.
+  const query = store.createQuery(UserKind);
+  const results = await store.runQuery(query);
+  const users = results[0] as User[];
+  // Intentionally not waiting for these to finish.
+  users.forEach(async user => {
+    console.log('fetching user');
+    console.log(user);
+    await fetchTimelineAndSave(user);
+  });
+  res.sendStatus(200);
 };

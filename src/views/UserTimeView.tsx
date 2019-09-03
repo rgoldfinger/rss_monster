@@ -1,8 +1,8 @@
 import React from 'react';
 import date from 'date-and-time';
 import injectSheet, { WithSheet } from 'react-jss';
-import withLayout from './renderLayout';
 import { Link } from '../store';
+import withLayout from './renderLayout';
 
 const FontFamily = 'Lato:300';
 
@@ -91,20 +91,21 @@ interface Props extends WithSheet<typeof styles> {
   results: Link[];
   pageDay: Date;
   page: number;
+  username: string;
 }
 
-function TimeView({ results, classes, pageDay, page }: Props) {
+function UserTimeView({ results, classes, pageDay, page, username }: Props) {
   return (
     <div className={classes.page}>
       <div className={classes.headerContainer}>
-        <a className={classes.navLink} href={`/time/${page - 1}`}>
+        <a className={classes.navLink} href={`/u/${username}/${page - 1}`}>
           {date.format(date.addDays(pageDay, -1), 'MMMM D')}
         </a>
         <h4 className={classes.title}>
           {date.format(pageDay, 'MMMM D, YYYY')}
         </h4>
         {page !== 0 ? (
-          <a className={classes.navLink} href={`/time/${page + 1}`}>
+          <a className={classes.navLink} href={`/u/${username}/${page + 1}`}>
             {date.format(date.addDays(pageDay, 1), 'MMMM D')}
           </a>
         ) : (
@@ -138,5 +139,5 @@ function TimeView({ results, classes, pageDay, page }: Props) {
   );
 }
 
-const StyledTimeView = injectSheet(styles)(TimeView);
-export default withLayout(StyledTimeView);
+const StyledUserTimeView = injectSheet(styles)(UserTimeView);
+export default withLayout(StyledUserTimeView);

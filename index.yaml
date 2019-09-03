@@ -1,0 +1,7 @@
+indexes:
+  - kind: Link
+    properties:
+      - name: accountId
+        direction: asc
+      - name: postedAt
+        direction: desc

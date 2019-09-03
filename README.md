@@ -39,3 +39,8 @@ https://console.cloud.google.com/logs/viewer?project=rss-monster&minLogLevel=0&e
 ## Cloud Datastore
 
 https://googleapis.dev/nodejs/datastore/latest/index.html
+
+### Create/Update indicies
+
+`gcloud datastore indexes create index.yaml`
+https://cloud.google.com/datastore/docs/tools/indexconfig

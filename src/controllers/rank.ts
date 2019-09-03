@@ -3,20 +3,7 @@ import date from 'date-and-time';
 import { DateTime } from 'luxon';
 
 import ShowView from '../views/ShowView';
-import store, { LinkKind } from '../store';
-
-export type Link = {
-  link: string;
-  likes: number;
-  rts: number;
-  postedAt: Date;
-  linkHash: string;
-  tweets: number | undefined;
-  score: number;
-  twDisplayLink?: string;
-  pageTitle?: string;
-  tweetIds?: string[];
-};
+import store, { LinkKind, Link } from '../store';
 
 export const show = async (
   req: Request & { params: { id: string } },

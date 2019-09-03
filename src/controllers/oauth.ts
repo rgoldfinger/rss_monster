@@ -3,8 +3,9 @@ import oauth from 'oauth';
 
 import LandingView from '../views/LandingView';
 import { TWITTER_API_KEY, TWITTER_API_SECRET_KEY } from '../util/secrets';
-import store, { UserKind, User } from '../store';
-import { encrypt, decrypt } from '../util/encryption';
+import store, { UserKind, User, AccountID } from '../store';
+import { encrypt } from '../util/encryption';
+import { fetchTimelineAndSave } from './save';
 
 // https://gist.github.com/JuanJo4/e408d9349b403523aeb00f262900e768
 const consumer = new oauth.OAuth(
@@ -94,18 +95,19 @@ export function twCallback(req: Request, res: Response) {
           'Error getting OAuth access token : ' + error + '[' + results + ']',
         );
       } else {
-        const twId = results.user_id;
+        const twId: AccountID = results.user_id;
         const username = results.screen_name;
         const userKey = store.key([UserKind, username]);
-        const data: User = {
+        const user: User = {
           username,
           twId,
           encryptedOAuthToken: encrypt(oauthAccessToken),
           encryptedOAuthTokenSecret: encrypt(oauthAccessTokenSecret),
         };
         try {
-          await store.save({
-            data,
+          // TODO if new, need to fetch right away so some data shows up.
+          const results = await store.save({
+            data: user,
             method: 'upsert',
             key: userKey,
             excludeFromIndexes: [
@@ -113,11 +115,11 @@ export function twCallback(req: Request, res: Response) {
               'encryptedOAuthTokenSecret',
             ],
           });
+          console.log(results[0].mutationResults);
+          req.session.user = user;
 
-          req.session.oauthAccessToken = oauthAccessToken;
-          req.session.oauthAccessTokenSecret = oauthAccessTokenSecret;
-          req.session.twId = twId;
-          req.session.username = username;
+          // TODO only do this if new.
+          fetchTimelineAndSave(user);
           res.redirect(`/u/${username}`);
         } catch (e) {
           console.log(e);

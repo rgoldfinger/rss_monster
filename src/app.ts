@@ -10,6 +10,7 @@ import * as timeController from './controllers/time';
 import * as resaveController from './controllers/resave';
 import * as landingController from './controllers/landing';
 import * as oauthController from './controllers/oauth';
+import * as userTimeController from './controllers/userTime';
 import { COOKIE_SECRET } from './util/secrets';
 import store, { UserKind, User } from './store';
 import { decrypt } from './util/encryption';
@@ -54,19 +55,14 @@ app.get('/logout', function(req, res) {
  * Primary app routes.
  */
 app.get('/fetchAndSave', saveController.fetchAndSave);
+app.get('/fetchUsersAndSave', saveController.fetchUsersAndSave);
 app.get('/', timeController.show);
 app.get('/page/:id', rankController.show);
 app.get('/resave', resaveController.resaveLinks);
 app.get('/delete', resaveController.deleteLinks);
 app.get('/time/:id?', timeController.show);
 app.get('/landing', landingController.show);
-app.get('/u/:username', async function(req, res) {
-  const userKey = store.key([UserKind, req.session.username]);
-  const result = await store.get(userKey);
-  const user = result[0] as User;
-  // TODO if logged in, redirect to /u/:username
-  res.send(user);
-});
+app.get('/u/:username/:id?', userTimeController.show);
 app.get('*', function(req, res) {
   res.redirect('/');
 });

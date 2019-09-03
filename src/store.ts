@@ -3,9 +3,12 @@ import fs from 'fs';
 
 export const TweetKind = 'Tweet';
 export const LinkKind = 'Link';
-export const UserKind = 'Link';
+export const UserKind = 'User';
+
+export type AccountID = string;
 
 export type Link = {
+  accountId: AccountID;
   link: string;
   likes: number;
   rts: number;
@@ -19,6 +22,7 @@ export type Link = {
 };
 
 export type Tweet = {
+  accountId: AccountID;
   twitterId: string;
   text: string;
   link: string;
