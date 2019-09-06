@@ -18,43 +18,44 @@ export const show = async (
   // const user = r1[0][0] as User;
   // TODO verify that this user exists in the DB
   if (actingUser && actingUser.username === req.params.username) {
-  try {
-    const page = req.params.id ? parseInt(req.params.id, 10) : 0;
-    const nowPacifc = DateTime.fromObject({ zone: 'America/Los_Angeles' });
-
-    const pageDate = nowPacifc.plus({ days: page });
     try {
-      const query = store
-        .createQuery(LinkKind)
-        .filter('accountId', '=', actingUser.twId)
-        .filter('postedAt', '>', pageDate.startOf('day').toJSDate())
-        .filter('postedAt', '<', pageDate.endOf('day').toJSDate());
+      const page = req.params.id ? parseInt(req.params.id, 10) : 0;
+      const nowPacifc = DateTime.fromObject({ zone: 'America/Los_Angeles' });
 
-      const entities = await store.runQuery(query);
-      const results = entities[0] as Link[];
-      const sorted = results.sort((a, b) => {
-        if (a.postedAt > b.postedAt) return -1;
-        if (a.postedAt < b.postedAt) return 1;
-        return 0;
-      });
+      const pageDate = nowPacifc.plus({ days: page });
+      try {
+        const query = store
+          .createQuery(LinkKind)
+          .filter('accountId', '=', actingUser.twId)
+          .filter('postedAt', '>', pageDate.startOf('day').toJSDate())
+          .filter('postedAt', '<', pageDate.endOf('day').toJSDate());
 
-      res.send(
-        UserTimeView({
-          results: sorted,
-          pageDay: pageDate,
-          page,
-          username: req.params.username,
-        }),
-      );
-    } catch (err) {
-      console.log(err);
-      res.status(400).send(err);
+        const entities = await store.runQuery(query);
+        const results = entities[0] as Link[];
+        const sorted = results.sort((a, b) => {
+          if (a.postedAt > b.postedAt) return -1;
+          if (a.postedAt < b.postedAt) return 1;
+          return 0;
+        });
+
+        res.send(
+          UserTimeView({
+            results: sorted,
+            pageDay: pageDate,
+            page,
+            username: req.params.username,
+          }),
+        );
+      } catch (err) {
+        console.log(err);
+        res.status(400).send(err);
+      }
+    } catch (e) {
+      res.status(400).send(e);
     }
-  } catch (e) {
-    res.status(400).send(e);
+    // } else {
+    //   // TODO allow other users to see their timeline if they enable that setting.
+    //   res.redirect('/landing');
+    // }
   }
-  // } else {
-  //   // TODO allow other users to see their timeline if they enable that setting.
-  //   res.redirect('/landing');
-  // }
 };
