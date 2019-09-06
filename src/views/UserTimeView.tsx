@@ -1,8 +1,8 @@
 import React from 'react';
-import date from 'date-and-time';
 import injectSheet, { WithSheet } from 'react-jss';
 import { Link } from '../store';
 import withLayout from './renderLayout';
+import { DateTime } from 'luxon';
 
 const FontFamily = 'Lato:300';
 
@@ -89,7 +89,7 @@ const styles = {
 
 interface Props extends WithSheet<typeof styles> {
   results: Link[];
-  pageDay: Date;
+  pageDay: DateTime;
   page: number;
   username: string;
 }
@@ -99,14 +99,12 @@ function UserTimeView({ results, classes, pageDay, page, username }: Props) {
     <div className={classes.page}>
       <div className={classes.headerContainer}>
         <a className={classes.navLink} href={`/u/${username}/${page - 1}`}>
-          {date.format(date.addDays(pageDay, -1), 'MMMM D')}
+          {pageDay.minus({ days: 1 }).toFormat('MMMM d')}
         </a>
-        <h4 className={classes.title}>
-          {date.format(pageDay, 'MMMM D, YYYY')}
-        </h4>
+        <h4 className={classes.title}>{pageDay.toFormat('MMMM d, yyyy')}</h4>
         {page !== 0 ? (
           <a className={classes.navLink} href={`/u/${username}/${page + 1}`}>
-            {date.format(date.addDays(pageDay, 1), 'MMMM D')}
+            {pageDay.plus({ days: 1 }).toFormat('MMMM d')}
           </a>
         ) : (
           <div className={classes.placeholder} />
@@ -122,7 +120,9 @@ function UserTimeView({ results, classes, pageDay, page, username }: Props) {
 
             <div className={classes.displayUrl}>
               <span>
-                {date.format(l.postedAt, 'hh:mm A')}
+                {DateTime.fromJSDate(l.postedAt)
+                  .setZone('America/Los_Angeles')
+                  .toFormat('hh:mm a')}
                 {'  '}
               </span>
               {l.pageTitle && <span>{l.twDisplayLink}</span>}
