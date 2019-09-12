@@ -16,7 +16,7 @@ steps:
         '--image',
         'gcr.io/$PROJECT_ID/app:$SHORT_SHA',
         '--platform',
-        'managed"",
+        'managed',
         '--region',
         'us-central1',
       ]
