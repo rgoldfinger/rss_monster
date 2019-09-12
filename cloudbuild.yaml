@@ -13,9 +13,11 @@ steps:
         'run',
         'deploy',
         'rss-monster',
-        '--container-image',
+        '--image',
         'gcr.io/$PROJECT_ID/app:$SHORT_SHA',
-        '--zone',
+        '--platform',
+        'managed"",
+        '--region',
         'us-central1',
       ]
 images:
