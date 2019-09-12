@@ -3,7 +3,7 @@ import app from './app';
 import greenlockExpress from 'greenlock-express';
 import greenlockStore from 'greenlock-store-fs';
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' || process.env.PORT) {
   app.use(errorHandler());
   app.listen(app.get('port'), () => {
     console.log(

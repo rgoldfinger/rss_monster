@@ -9,14 +9,14 @@ steps:
     id: Deploy
     args:
       [
-        'compute',
-        'instances',
-        'update-container',
-        'app',
+        'beta',
+        'run',
+        'deploy',
+        'rss-monster',
         '--container-image',
         'gcr.io/$PROJECT_ID/app:$SHORT_SHA',
         '--zone',
-        'us-west1-a',
+        'us-central1',
       ]
 images:
   - 'gcr.io/$PROJECT_ID/app:$SHORT_SHA'
