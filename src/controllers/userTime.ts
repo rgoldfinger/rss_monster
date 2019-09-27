@@ -53,9 +53,8 @@ export const show = async (
     } catch (e) {
       res.status(400).send(e);
     }
-    // } else {
-    //   // TODO allow other users to see their timeline if they enable that setting.
-    //   res.redirect('/landing');
-    // }
+  } else {
+    // TODO allow other users to see their timeline if they enable that setting.
+    res.redirect('/landing');
   }
 };
