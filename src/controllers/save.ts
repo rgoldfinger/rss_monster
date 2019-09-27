@@ -21,7 +21,6 @@ import {
 
 import Twit from 'twit';
 import { decrypt } from '../util/encryption';
-import { userInfo } from 'os';
 
 type TWTweet = {
   text: string;
@@ -49,14 +48,8 @@ export const saveLinkData = async (tweet: Tweet) => {
   }
 
   let pageTitle = existingLink.pageTitle;
-  if (!pageTitle) {
-    console.log('fetching page title for ', tweet.twDisplayLink);
+  if (!pageTitle && !existingLink.link.endsWith('.pdf')) {
     pageTitle = await getPageTitle(tweet.link);
-    if (!pageTitle) {
-      console.log('But no page title found for ', tweet.link);
-    } else {
-      console.log('Page title found for ', tweet.link, pageTitle);
-    }
   }
   const isSameTweet = existingLink.tweetIds.includes(tweet.twitterId);
   const isOnlyTweet = isSameTweet && existingLink.tweetIds.length === 1;
@@ -87,7 +80,6 @@ export const saveLinkData = async (tweet: Tweet) => {
   };
 
   try {
-    console.log('saving ', link.link, link.pageTitle, link.accountId);
     await store.save({
       data: link,
       method: 'upsert',

@@ -74,6 +74,7 @@ export function twCallback(req: Request, res: Response) {
     req.query.oauth_verifier,
     async function(error, oauthAccessToken, oauthAccessTokenSecret, results) {
       if (error) {
+        console.log({ error, results });
         res.send(
           'Error getting OAuth access token : ' + error + '[' + results + ']',
         );
