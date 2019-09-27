@@ -38,6 +38,7 @@ export const saveLinkData = async (tweet: Tweet) => {
     likes: 0,
     tweetIds: [],
     accountId: tweet.accountId,
+    link: tweet.link,
   };
   try {
     const res = await store.get(linkKey);
@@ -68,7 +69,7 @@ export const saveLinkData = async (tweet: Tweet) => {
   const link: Link = {
     accountId: tweet.accountId,
     likes,
-    link: tweet.link,
+    link: existingLink.link,
     linkHash: tweet.linkHash,
     postedAt: new Date(tweet.postedAt),
     rts,
