@@ -24,9 +24,6 @@ const styles = {
     textAlign: 'end',
   },
   content: {
-    'white-space': 'nowrap',
-    overflow: 'hidden',
-    'text-overflow': 'ellipsis',
     flex: 1,
   },
   linkContainer: {
