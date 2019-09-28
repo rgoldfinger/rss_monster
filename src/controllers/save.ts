@@ -244,8 +244,6 @@ export const fetchUsersAndSave = async (req: Request, res: Response) => {
   const users = results[0] as User[];
   // Intentionally not waiting for these to finish.
   users.forEach(async user => {
-    console.log('fetching user');
-    console.log(user);
     await fetchTimelineAndSave(user);
   });
   res.sendStatus(200);
