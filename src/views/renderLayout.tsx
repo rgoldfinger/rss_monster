@@ -2,7 +2,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { JssProvider, SheetsRegistry } from 'react-jss';
 
-export const FontFamily = 'Lato:300';
+export const FontFamily = 'Lato:300,400';
 
 export default function(Component: any) {
   return function(props: any) {

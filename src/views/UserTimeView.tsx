@@ -4,14 +4,13 @@ import { Link } from '../store';
 import withLayout from './renderLayout';
 import { DateTime } from 'luxon';
 
-const FontFamily = 'Lato:300';
-
 const maxWidth = `@media (max-width: 420px)`;
 
 const styles = {
   page: {
     padding: 50,
-    'font-family': `'${'Lato'}', sans-serif`,
+    'font-family': `'Lato', sans-serif`,
+    'font-weight': 300,
   },
   item: {
     paddingTop: 20,
@@ -22,6 +21,7 @@ const styles = {
     width: 50,
     marginRight: 20,
     textAlign: 'end',
+    'font-weight': 400,
   },
   content: {
     flex: 1,
@@ -35,6 +35,9 @@ const styles = {
     '&:visited': {
       color: '#AAA',
     },
+    'font-weight': 400,
+    'text-decoration': 'none',
+    'font-size': '14px',
   },
   metadata: {
     paddingRight: 20,
@@ -45,6 +48,7 @@ const styles = {
   },
   title: {
     textAlign: 'center',
+    'font-weight': 300,
   },
   headerContainer: {
     display: 'flex',
